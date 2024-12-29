@@ -1,93 +1,145 @@
 # python-hetzner-reassign
 
+The Hetzner API currently does not provide fine-grained access controls for its API. You either have an access token
+which can only read information or have an access token which can write (including deletion) an entire project.
+This situation makes it necessary that servers using things like `keepalived` for automatic fail-over do not know the API
+credentials.
+This project aims to provide:
+- Scrips for `keepalived` to start CI/CD pipelines
+- A Python library and a script for resource reassignment
+- CI/CD templates for Gitlab CI/CD, Jenkins, Tekton and Github Workflows.
 
+> **INFO**
+> We focus on open platforms such as Gitlab, Jenkins and Tekton.
 
-## Getting started
+The library will be provided for different package managers:
+- Alpine Package Manager
+- Debian Package Manager/APT
+- Python via PIP/PyPI
+- RedHat Package Manager
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/mrmolybdaen/python-hetzner-reassign.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/mrmolybdaen/python-hetzner-reassign/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+See below for further information.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+The templates provided in this project will install the library on every run. If you like to speed up things, fix a version
+or simpy build your own images, or if you prefer to use another environment, you can install yourself.
+
+This project will try to provide the script for at least two (long-term supported) versions of each platform.
+We do not aim RHEL or Ubuntu Extended Support which would mean to provide compatibility over a decade.
+
+### PyPI/PIP
+
+The most prominent way would be using PyPI and pip:
+
+```shell
+> pip install hcloud_reassign
+> hcloud-reassign --version
+```
+
+### Debian package
+
+The Debian package is resided in a public repository.
+
+Configure the sources list and repository key as following:
+```shell
+```
+
+Afterwards install the package:
+```shell
+> sudo apt update
+> sudo apt install hcloud-reassign
+```
+
+### Alpine
+
+### RedHat based distributions
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+The script needs an INI formatted configuration file given by `--config`.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+A `[client]` section is mandatory to configure the client.
+To configure resources you can add as many sections as you want. To specify the function used for reassignment, you need
+to define a type. The following types exist:
+- `ip_floating`
+- `ip_public`
+- `routes`
+
+IP addresses in private networks cannot get assigned. Addresses are set either manually or via Hetzner DHCP which cannot
+be controlled via API.
+
+Hetzner API tokens are bound to a project. So there is no need to specify a project. However, this also means, one needs
+to provide different configuration files for different projects.
+
+Resource names are unique per project. This is why we do not use UIDs. 
+
+```ini
+[client]
+api_url=<optional|Hetzner API URL>
+api_token=<optional|API Token, can be omitted if --token was specified>
+
+; Floating ip addresses - change the assigned VM
+[floating.NAME]
+type=ip_floating
+resource=floating-test-01
+source=srv-test-01
+destination=srv-test-02
+
+; For primary ip addresses as described by Hetzner
+; Warning: Reassigning primary IP addresses will result in reboots!
+; One cannot add more than one primary ip. 
+; There is no such thing like secondary ip addresses in the Hetzner Cloud.
+[public.NAME]
+type=ip_public
+resource=public-test-01
+source=
+destination=
+
+; For routes
+; Reassigning/changing routes means, changing the specified gateway.
+; This is mostly relevant for outbound traffic. Be aware that changing the standard gateway
+; means not to reassign the route, but deleting the old one and 
+[route.NAME]
+type=route
+network=0.0.0.0/0
+source=10.0.0.1
+destination=10.0.0.2
+```
+
+## Constrains
+
+This projects aims at smaller projects with a need for higher availability and downtime minimization.
+Larger projects might make use of DNS APIs and DNS roundrobin instead.
+
+If a server goes down and keepalived kicks in for reassignment, the downtime will last longer due to pipeline creation.
+This usually needs about a minute or two to fully run small scripts.
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Pre-Commit hooks
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+Please use pre-commit!
+The project provides a conifguration file for pre-commit hooks. This way you can only commit changes which fulfill some
+standards such as linters oder code styles.
+Fully fledged automated testing will run in a CI/CD pipeline.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```shell
+> pip install pre-commit
+> pre-commit install
+```
 
-## License
-For open source projects, say how it is licensed.
+### Commit messages
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Use small commits and human-readable and human understandable commit messages. Cherry-picking from commits needs
+explanation and not a messages "Cherrypick <commit hash 1> to <commit hash 2>" or something like that.
+A good source is:
+- https://py-pkgs.org/07-releasing-versioning.html
+and especially:
+- https://py-pkgs.org/07-releasing-versioning.html#automatic-version-bumping
+
+
+### CHANGELOG
+
+The changelog leaves Python territory. We use a Debian format to only write it ones.
+The changelog will not reflect every commit but the important changes. (Bug fixes, Features, Version bumps)

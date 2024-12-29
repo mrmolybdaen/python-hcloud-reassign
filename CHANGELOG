@@ -1,0 +1,14 @@
+hcloud-reassign (0.1.0) main; urgency=low
+
+  * FEAT:
+    - Provide main script
+    - Provide ip_floating
+    - Provide ip_public
+    - Provide route
+    - Provide metrics
+    - Provide utils
+    - Provide constants
+    - Provide README and documentation
+
+
+ -- Christian Siegel <molybdaen@mr42.org> Fri, 27.12.2024 +0100
