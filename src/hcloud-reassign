@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+# Copyright: (c) 2024, Christian Siegel <molybdaen@mr42.org>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+"""
+    This script provides an easy to use command line api for the Hetzner HCloud module.
+    You can easily reassign Hetzner Cloud network resources to different machines.
+"""
+
+import sys
+# Import ArgumentParser for command line based configuration
+from argparse import ArgumentParser
+# Import getpass for password/token
+from getpass import getpass
+from getpass import getuser
+
+try:
+    import hcloud_reassign.ip_floating as floating_ip
+    import hcloud_reassign.ip_private as private_ip
+    import hcloud_reassign.ip_public as public_ip
+    import hcloud_reassign.route as route
+    import hcloud_reassign.utils as utils
+except ImportError as error:
+    print(error)
+    print("You must install hcloud_reassign first!")
+
+
+def main():
+    """This function is called when this module is used as a script.
+
+    Returns
+    -------
+        status_code : int
+                      Return status code
+
+    """
+
+    # Create argument parser
+    parser = ArgumentParser(prog="hcloud-reassign", description="Reassign Hetzner Cloud network resources to different machines.")
+    parser.add_argument("-c", "--config", action="store", dest="config", help="Path to configuration file")
+    parser.add_argument("-t", "--token", action="store_true", dest="token", help="API token for manual use")
+
+    # Parse arguments
+    cli_args = parser.parse_args()
+
+    token = None
+    if cli_args.token:
+        token = getpass(prompt="Password or Token: ")
+
+    if cli_args.config:
+        config = ConfigParser()
+        config.read(cli_args.config)
+
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
