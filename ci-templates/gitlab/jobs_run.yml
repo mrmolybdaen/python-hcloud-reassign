@@ -1,0 +1,13 @@
+##
+# This collection of jobs runs the hcloud-reassign Python script.
+##
+
+run:reassign:
+  stage: run
+  environment: $RUN_ENVIRONMENT
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+  script:
+    - python --version
+    - pip install hcloud_reassign
+    - hcloud-reassign --config $RUN_CONFIG --direction $RUN_DIRECTION
