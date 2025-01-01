@@ -1,0 +1,17 @@
+# This file contains a job to create a release in Gitlab
+
+release:release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  environment: release
+  rules:
+    - if: $CI_COMMIT_TAG != '' && $CI_COMMIT_TAG
+      when: always
+    # We do not want to create a release for testing stuff.
+    - if: $CI_COMMIT_TAG =~ -(rc|alpha|beta|test)$
+      when: never
+  script:
+      - echo "Create release in Gitlab"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: '$CI_COMMIT_TAG'
