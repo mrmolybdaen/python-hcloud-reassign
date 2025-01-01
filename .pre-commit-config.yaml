@@ -27,7 +27,7 @@ repos:
     rev: 7.1.1  # pick a git hash / tag to point to
     hooks:
       - id: flake8
-        args: ["--black-config", "test/ansible-lint/.black", "--config", "test/ansible-lint/.flake8", "--color", "always"]
+        args: ["--black-config", "tests/style/.black", "--config", "tests/linters/.flake8", "--color", "always"]
         additional_dependencies:
           - flake8-docstrings
           - flake8-black

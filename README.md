@@ -85,6 +85,7 @@ type=ip_floating
 resource=floating-test-01
 source=srv-test-01
 destination=srv-test-02
+metrics=true
 
 ; For primary ip addresses as described by Hetzner
 ; Warning: Reassigning primary IP addresses will result in reboots!
@@ -95,6 +96,7 @@ type=ip_public
 resource=public-test-01
 source=
 destination=
+metrics=true
 
 ; For routes
 ; Reassigning/changing routes means, changing the specified gateway.

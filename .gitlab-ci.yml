@@ -1,3 +1,28 @@
+# Define default image
+image: "alpine/python:latest"
+defaults:
+  variables:
+    RUN_ENVIRONMENT: "testapi"
+    RUN_DIRECTION: "dest"
+    RUN_CONFIG: "config.ini"
+    PATH_CI_TEMPLATES: "ci-templates/gitlab"
+
+##
+# Define the pipeline stages
+##
+stages:
+  # Run linters, unit tests etc.
+  - test
+  # Create a release from a git tag
+  - release
+  # Build packages for release
+  - build
+  # Deploy packages to package registries
+  - deploy
+  # Run the hcloud-reassign script in a pipeline
+  - run
+
+
 # You can override the included template(s) by including variable overrides
 # SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
@@ -5,9 +30,14 @@
 # Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-stages:
-- test
 sast:
   stage: test
+
+# Include jobs and templates
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - local: "$PATH_CI_TEMPLATES/jobs_tests.yml"
+  - local: "$PATH_CI_TEMPLATES/jobs_release.yml"
+  - local: "$PATH_CI_TEMPLATES/jobs_build.yml"
+  - local: "$PATH_CI_TEMPLATES/jobs_deploy.yml"
+  - local: "$PATH_CI_TEMPLATES/jobs_run.yml"
+  - template: "Security/SAST.gitlab-ci.yml"
