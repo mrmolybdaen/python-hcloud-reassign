@@ -1,11 +1,27 @@
 [build-system]
 requires = [
-  "setuptools >= 75.1.0",
+    "setuptools >= 75.1.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "hcloud_reassign"
+description = "A small project to reassign routes, primary and floating ip addresses in the Hetzner Cloud."
+authors = [
+    { name="Christian Siegel", email="molybdaen@mr42.org" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
+    "Topic :: System :: Cloud",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
 dynamic = ["version"]
 requires-python = ">= 3.11"
 dependencies = [
