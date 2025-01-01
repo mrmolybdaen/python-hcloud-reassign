@@ -3,12 +3,36 @@
 
 # Import ConfigParser for file based configuration
 from configparser import ConfigParser, NoSectionError, NoOptionError
+
 # Provide hcloud Client object
 from hcloud import Client
 # Import warnings
 import warnings
 
 from . import constants
+
+
+def make_client(token: str|None = None, url: str = constants.CONFIG_OPTION_API_URL) -> Client:
+    """Create an instance of the Hcloud client.
+
+    This is a wrapper around hcloud.Client.
+
+    Parameters
+    ----------
+    token : str
+            API token to authenticate with the Hcloud.
+    url : str, optional
+          URL of the Hcloud API.
+
+    Returns
+    -------
+    hcloud.Client
+    """
+
+    return Client(token=token, api_endpoint=url)
+
+class HcloudClient(Client):
+    pass
 
 
 class HcloudReassignIni:
@@ -69,27 +93,68 @@ class HcloudReassignIni:
             self.client_section_dict[option] = self.config.get(constants.CONFIG_SECTION_CLIENT, option)
 
 
-    def dest2source(self, sections: list[str] | None = None ) -> None:
-        """This method swaps destination with source for given sections
+class HcloudClassBase:
+    """This class provides all basics"""
+
+    def __init__(self, section: dict, client: dict, hclient: HcloudClient|None = None, **kwargs) -> None:
+        """Initialize HcloudClassBase
 
         Parameters
         ----------
-        sections : list[str] | None
-                   List of sections to swap destination and source
+        section : dict
+                  Dictionary of options contained by a section.
+        client : dict
+                 Dictionary of client section information
+        hclient : Client|None, optional
+                  hcloud.Client object. Use when to reassign multiple resources.
+        """
+        # Assign section
+        self.section = section
+        self.client = client
+
+        self.__check_client()
+
+        # In case of multiple actions, we do not want too much
+        # API connections and client objects because of rate limits.
+        if not hclient:
+            self.hclient = HcloudClient(token=self.client[constants.CONFIG_OPTION_API_TOKEN],
+                                        api_endpoint=self.client[constants.CONFIG_DEFAULT_API_URL])
+        else:
+            self.hclient = hclient
+
+
+    def __check_section(self, stype: str) -> None:
+        """This method checks if section was defined correctly
+        Parameters
+        ----------
+        stype : str
+                Type of section
         """
 
-        if not sections:
-            sections = self.resource_sections
+        if 'type' not in self.section.keys() and not self.section['type']:
+            raise KeyError("Section 'type' is not defined or empty.")
 
-        for section in sections:
-            if section not in self.resource_sections:
-                warnings.warn(f"'{section}' is not defined. Did you misspell it? Skipping ...")
-                continue
+        if self.section['type'] != stype:
+            raise ValueError(f"Wrong section type for this function. "
+                             f"Configured '{self.section['type']}', wants '{stype}'.'")
 
-            # Get destination name
-            tmp = self.resource_section_dict[section]['destination']
+        if 'source' not in self.client.keys() and not self.client['source']:
+            raise KeyError("Option 'source' is not defined or empty.")
 
-            # Switch destination and source definitions
-            self.resource_section_dict[section]['source'] = self.resource_section_dict[section]['destination']
-            self.resource_section_dict[section]['destination'] = tmp
+        if 'destination' not in self.client.keys() and not self.client['destination']:
+            raise KeyError("Option 'destination' is not defined or empty.")
 
+
+    def __check_client(self) -> None:
+        """This method checks if client was defined correctly"""
+
+        # Define shorthands for option names for readability
+        url = constants.CONFIG_OPTION_API_URL
+        token = constants.CONFIG_OPTION_API_TOKEN
+
+        if url not in self.client.keys() and not self.client[url]:
+            warnings.warn(f"Option '{url}' is not defined or empty. Using default constant.")
+            self.client[url] = constants.CONFIG_DEFAULT_API_URL
+
+        if token not in self.client.keys() and not self.client[token]:
+            raise ValueError(f"Option '{token}' is not defined or empty. You an access/api token for authentication!")
