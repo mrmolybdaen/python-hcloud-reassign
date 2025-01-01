@@ -1,0 +1,13 @@
+# This file contains a list of test jobs
+
+test:flake8:
+  stage: test
+  image: "alpine/flake8:latest"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: never
+  script:
+    - pip install flake8-docstring flake8-black flake8-bandit flake8-bugbear
+    - pip install -r requirements.txt
+    - flake8 --version
+    - flake8 --black-config tests/style/.black --config tests/linters/.flake8, --color always
