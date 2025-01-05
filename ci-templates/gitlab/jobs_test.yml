@@ -14,11 +14,10 @@ test:flake8:
 
 test:black:
   stage: test
-  image: "pipelinecomponents/black"
+  image: "pipelinecomponents/black:latest"
   rules:
     - if: $CI_PIPELINE_SOURCE != "trigger"
   script:
-    - pip install -r requirements.txt
     - black --version
     - black --config tests/style/.black --check . --diff --color
   cache: []
