@@ -35,9 +35,9 @@ sast:
 
 # Include jobs and templates
 include:
-  - local: "$PATH_CI_TEMPLATES/jobs_test.yml"
-  - local: "$PATH_CI_TEMPLATES/jobs_release.yml"
-  - local: "$PATH_CI_TEMPLATES/jobs_build.yml"
-  - local: "$PATH_CI_TEMPLATES/jobs_deploy.yml"
-  - local: "$PATH_CI_TEMPLATES/jobs_run.yml"
+  - local: "ci-templates/gitlab/jobs_test.yml"
+  - local: "ci-templates/gitlab/jobs_release.yml"
+  - local: "ci-templates/gitlab/jobs_build.yml"
+  - local: "ci-templates/gitlab/jobs_deploy.yml"
+  - local: "ci-templates/gitlab/jobs_run.yml"
   - template: "Security/SAST.gitlab-ci.yml"
