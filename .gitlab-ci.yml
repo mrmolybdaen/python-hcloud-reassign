@@ -25,7 +25,9 @@ default:
 # Define the pipeline stages
 ##
 stages:
-  # Run linters, unit tests etc.
+  # Run linters and code style tools
+  - linters
+  # Run unit and functional tests etc.
   - test
   # Create a release from a git tag
   - release

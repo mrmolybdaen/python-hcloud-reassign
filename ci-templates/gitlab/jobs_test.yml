@@ -1,7 +1,7 @@
 # This file contains a list of test jobs
 
 test:flake8:
-  stage: test
+  stage: linters
   image: "pipelinecomponents/flake8:latest"
   rules:
     - if: $CI_PIPELINE_SOURCE != "trigger"
@@ -13,7 +13,7 @@ test:flake8:
   cache: []
 
 test:black:
-  stage: test
+  stage: linters
   image: "pipelinecomponents/black:latest"
   rules:
     - if: $CI_PIPELINE_SOURCE != "trigger"
