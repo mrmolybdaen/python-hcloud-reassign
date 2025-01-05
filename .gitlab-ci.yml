@@ -8,7 +8,7 @@ variables:
   RUN_CONFIG: "config.ini"
   PATH_CI_TEMPLATES: "ci-templates/gitlab"
 
-# Define global before script and cache paths
+# Define global before-script and cache paths
 default:
   before_script:
     - mkdir -p build packages dist

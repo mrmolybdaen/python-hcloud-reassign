@@ -4,10 +4,21 @@ test:flake8:
   stage: test
   image: "alpine/flake8:latest"
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: never
+    - if: $CI_PIPELINE_SOURCE != "trigger"
   script:
     - pip install flake8-docstring flake8-black flake8-bandit flake8-bugbear
     - pip install -r requirements.txt
     - flake8 --version
     - flake8 --black-config tests/style/.black --config tests/linters/.flake8 --color always
+  cache: []
+
+test:black:
+  stage: test
+  image: "pipelinecomponents/black"
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "trigger"
+  script:
+    - pip install -r requirements.txt
+    - black --version
+    - black --config tests/style/.black --check . --diff --color
+  cache: []
