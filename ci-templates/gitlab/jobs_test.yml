@@ -9,7 +9,7 @@ test:flake8:
     - pip install flake8-docstrings flake8-black flake8-bandit flake8-bugbear
     - pip install -r requirements.txt
     - flake8 --version
-    - flake8 --black-config tests/style/.black --config tests/linters/.flake8 --color always
+    - flake8 --black-config tests/style/.black --config tests/linters/.flake8 --color always --benchmark
   cache: []
 
 test:black:
