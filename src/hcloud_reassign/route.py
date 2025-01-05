@@ -13,5 +13,4 @@ class HCloudRouteSection(utils.HcloudClassBase):
     """This class represents a route section to recreate routes and reassign standard gateways."""
 
     net = networks.annotations
-
-    pass
+    print(net)
