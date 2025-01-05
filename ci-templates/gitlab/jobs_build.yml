@@ -7,9 +7,6 @@ build:package:python:
     - if: $CI_COMMIT_TAG != '' && $CI_COMMIT_TAG
   script:
     - python --version
-  artifacts:
-    path:
-      - dist/*
 
 .os_package_manager:
   stage: build
@@ -23,9 +20,6 @@ build:package:debian:
   extends: .os_package_manager
   script:
     - /bin/sh helpers/build/debian.sh $CI_COMMIT_TAG
-  artifacts:
-    path:
-      - package/*.deb
 
 build:package:redhat:
   extends: .os_package_manager
@@ -33,6 +27,3 @@ build:package:redhat:
     - if: $CI_COMMIT_TAG != '' && $CI_COMMIT_TAG
   script:
     - /bin/sh helpers/build/redhat.sh $CI_COMMIT_TAG
-  artifacts:
-    path:
-      - package/*.rpm

@@ -1,11 +1,25 @@
 # Define default image
 image: "alpine/python:latest"
-defaults:
-  variables:
-    RUN_ENVIRONMENT: "testapi"
-    RUN_DIRECTION: "dest"
-    RUN_CONFIG: "config.ini"
-    PATH_CI_TEMPLATES: "ci-templates/gitlab"
+
+# Define basic variables
+variables:
+  RUN_ENVIRONMENT: "testapi"
+  RUN_DIRECTION: "dest"
+  RUN_CONFIG: "config.ini"
+  PATH_CI_TEMPLATES: "ci-templates/gitlab"
+
+# Define global before script and cache paths
+default:
+  before_script:
+    - mkdir -p build packages dist
+  cache:
+    key: $CI_COMMIT_BRANCH
+    paths:
+      - build/*.tar
+      - build/*.tar.gz
+      - packages/*.deb
+      - packages/*.rpm
+      - dist/*
 
 ##
 # Define the pipeline stages
