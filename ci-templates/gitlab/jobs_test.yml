@@ -4,6 +4,7 @@
 # Linters and code style checker
 ##
 
+# Codestyle with flake8 and the flake8-black plugin
 test:flake8:
   stage: linters
   image: "pipelinecomponents/flake8:latest"
@@ -16,6 +17,7 @@ test:flake8:
     - flake8 --black-config tests/style/.black --config tests/linters/.flake8 --color always --benchmark
   cache: []
 
+# This is just to get information on the changes black would make.
 test:black:
   stage: linters
   image: "pipelinecomponents/black:latest"
@@ -26,6 +28,7 @@ test:black:
     - black --config tests/style/.black --check . --diff --color
   cache: []
 
+# Lint code
 test:pylint:
   stage: linters
   image: "pipelinecomponents/pylint:latest"
