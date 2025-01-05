@@ -12,6 +12,9 @@ This project aims to provide:
 > **INFO**
 > We focus on open platforms such as Gitlab, Jenkins and Tekton.
 
+> **WARNING**
+> The _main_ branch and any branch excluding tags are considered unstable. Do not use them in production!
+
 The library will be provided for different package managers:
 - Alpine Package Manager
 - Debian Package Manager/APT
@@ -72,7 +75,7 @@ be controlled via API.
 Hetzner API tokens are bound to a project. So there is no need to specify a project. However, this also means, one needs
 to provide different configuration files for different projects.
 
-Resource names are unique per project. This is why we do not use UIDs. 
+Resource names are unique per project. This is why we do not use UIDs.
 
 ```ini
 [client]
@@ -89,7 +92,7 @@ metrics=true
 
 ; For primary ip addresses as described by Hetzner
 ; Warning: Reassigning primary IP addresses will result in reboots!
-; One cannot add more than one primary ip. 
+; One cannot add more than one primary ip.
 ; There is no such thing like secondary ip addresses in the Hetzner Cloud.
 [public.NAME]
 type=ip_public
@@ -101,7 +104,7 @@ metrics=true
 ; For routes
 ; Reassigning/changing routes means, changing the specified gateway.
 ; This is mostly relevant for outbound traffic. Be aware that changing the standard gateway
-; means not to reassign the route, but deleting the old one and 
+; means not to reassign the route, but deleting the old one and
 [route.NAME]
 type=route
 network=0.0.0.0/0
