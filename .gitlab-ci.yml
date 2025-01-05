@@ -35,7 +35,7 @@ sast:
 
 # Include jobs and templates
 include:
-  - local: "$PATH_CI_TEMPLATES/jobs_tests.yml"
+  - local: "$PATH_CI_TEMPLATES/jobs_test.yml"
   - local: "$PATH_CI_TEMPLATES/jobs_release.yml"
   - local: "$PATH_CI_TEMPLATES/jobs_build.yml"
   - local: "$PATH_CI_TEMPLATES/jobs_deploy.yml"
