@@ -91,7 +91,10 @@ class HcloudReassignIni:
         for section in self.resource_sections:
             self.resource_section_dict[section] = {}
             for option in self.config.options(section):
-                self.resource_section_dict[section][option] = self.config.get(section, option)
+                if option == "metrics":
+                    self.resource_section_dict[section][option] = self.config.getboolean(section, option)
+                else:
+                    self.resource_section_dict[section][option] = self.config.get(section, option)
 
     def __client_section2dict(self):
         """Create a dictionary from client sections."""
@@ -104,6 +107,9 @@ class HcloudReassignIni:
 @dataclass
 class HcloudClassBase:
     """This class provides all basics."""
+
+    section_model: dict[str, type]
+    section_type: str
 
     def __init__(self, section: dict, client: dict, hclient: HcloudClient | None = None) -> None:
         """Initialize HcloudClassBase.
@@ -122,38 +128,35 @@ class HcloudClassBase:
         self.client = client
 
         self.__check_client()
+        self.__check_section()
 
         # In case of multiple actions, we do not want too much
         # API connections and client objects because of rate limits.
         if not hclient:
             self.hclient = HcloudClient(
                 token=self.client[constants.CONFIG_OPTION_API_TKN],
-                api_endpoint=self.client[constants.CONFIG_DEFAULT_API_URL],
+                api_endpoint=self.client[constants.CONFIG_OPTION_API_URL],
             )
         else:
             self.hclient = hclient
 
-    def __check_section(self, stype: str) -> None:
-        """Check if section was defined correctly.
-
-        Parameters
-        ----------
-        stype : str
-                Type of section
-        """
-        if "type" not in self.section.keys() and not self.section["type"]:
+    def __check_section(self) -> None:
+        """Check if section was defined correctly."""
+        if not ("type" in self.section.keys() and self.section["type"]):
             raise KeyError("Section 'type' is not defined or empty.")
 
-        if self.section["type"] != stype:
+        if self.section["type"] != self.section_type:
             raise ValueError(
-                f"Wrong section type for this function. " f"Configured '{self.section['type']}', wants '{stype}'.'"
+                f"Wrong section type for this Class. Configured '{self.section['type']}', wants '{self.section_type}'.'"
             )
 
-        if "source" not in self.client.keys() and not self.client["source"]:
-            raise KeyError("Option 'source' is not defined or empty.")
-
-        if "destination" not in self.client.keys() and not self.client["destination"]:
-            raise KeyError("Option 'destination' is not defined or empty.")
+        # Check if section model and defined section match.
+        for option_name, option_type in self.section_model.items():
+            if option_name not in self.section.keys():
+                if not (isinstance(self.section[option_name], bool) or self.section[option_name]):
+                    raise KeyError(f"Option '{option_name}' is not defined or empty.")
+            if not isinstance(self.section[option_name], option_type):
+                raise TypeError(f"Option '{option_name}' is not of type '{option_type}'.")
 
     def __check_client(self) -> None:
         """Check if client was defined correctly."""
@@ -161,9 +164,9 @@ class HcloudClassBase:
         url = constants.CONFIG_OPTION_API_URL
         token = constants.CONFIG_OPTION_API_TKN
 
-        if url not in self.client.keys() and not self.client[url]:
+        if not (url in self.client.keys() and self.client[url]):
             warnings.warn(f"Option '{url}' is not defined or empty. Using default constant.", stacklevel=2)
             self.client[url] = constants.CONFIG_DEFAULT_API_URL
 
-        if token not in self.client.keys() and not self.client[token]:
+        if not (token in self.client.keys() and self.client[token]):
             raise ValueError(f"Option '{token}' is not defined or empty. You an access/api token for authentication!")
