@@ -2,7 +2,7 @@
 
 test:flake8:
   stage: test
-  image: "alpine/flake8:latest"
+  image: "pipelinecomponents/flake8:latest"
   rules:
     - if: $CI_PIPELINE_SOURCE != "trigger"
   script:
