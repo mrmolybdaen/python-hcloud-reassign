@@ -20,9 +20,10 @@ class HCloudFloatingIPSection(utils.HcloudClassBase):
         client: dict
                 Dictionary of connection information such as API token and endpoint url.
         """
-        super().__init__(section=section, client=client)
+        self.section_type = "ip_floating"
+        self.section_model = {"resource": str, "source": str, "destination": str, "metrics": bool}
 
-        self.__check_section(stype="floating")
+        super().__init__(section=section, client=client)
 
         self.resource: str = section["resource"]
         self.source: str = section["source"]
@@ -30,7 +31,13 @@ class HCloudFloatingIPSection(utils.HcloudClassBase):
         self.metrics: bool = section["metrics"]
 
     def __reassign(self, dest: str):
-        """Reassign floating IP section."""
+        """Reassign floating IP section.
+
+        Parameters
+        ----------
+        dest: str
+              Direction to reassign, either 'source' or 'destination'.
+        """
         dest_server = self.hclient.servers.get_by_name(name=dest)
         flip = self.hclient.floating_ips.get_by_name(self.resource)
 
@@ -45,3 +52,10 @@ class HCloudFloatingIPSection(utils.HcloudClassBase):
     def assign_source(self):
         """Assign floating IP section to source."""
         return self.__reassign(dest=self.source)
+
+    def reassign(self, dest: str):
+        """Reassign floating IP section to destination."""
+        if dest == "src":
+            return self.assign_source()
+        if dest == "dest":
+            return self.assign_destination()
