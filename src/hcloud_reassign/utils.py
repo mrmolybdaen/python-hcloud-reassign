@@ -6,11 +6,11 @@
 # Import ConfigParser for file based configuration
 from configparser import ConfigParser
 
-# Provide hcloud Client object
-from hcloud import Client
-
 # Import warnings
 import warnings
+
+# Provide hcloud Client object
+from hcloud import Client
 
 from . import constants
 
