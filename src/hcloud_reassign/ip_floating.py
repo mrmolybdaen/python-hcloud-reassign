@@ -10,7 +10,7 @@ from . import utils
 class HCloudFloatingIPSection(utils.HcloudClassBase):
     """This class represents a Floating IP section."""
 
-    def __init__(self, section: dict[str, str, str, str, bool], client: dict, **kwargs):
+    def __init__(self, section: dict[str, str, str, str, bool], client: dict):
         """Initialize a Floating IP section object.
 
         Parameters
@@ -20,7 +20,7 @@ class HCloudFloatingIPSection(utils.HcloudClassBase):
         client: dict
                 Dictionary of connection information such as API token and endpoint url.
         """
-        super().__init__(section=section, client=client, **kwargs)
+        super().__init__(section=section, client=client)
 
         self.__check_section(stype="floating")
 

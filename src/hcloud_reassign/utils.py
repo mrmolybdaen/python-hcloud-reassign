@@ -6,6 +6,9 @@
 # Import ConfigParser for file based configuration
 from configparser import ConfigParser
 
+# Import dataclass
+from dataclasses import dataclass
+
 # Import warnings
 import warnings
 
@@ -15,11 +18,9 @@ from hcloud import Client
 # Import local constants
 from . import constants
 
-
-class HcloudClient(Client):
-    """This is a wrapper class. It dups hcloud.Client."""
-
-    pass
+# Wrap hcloud.Client into our own type, so hcloud
+# does not need to get imported in every module
+HcloudClient = Client
 
 
 def make_client(token: str | None = None, url: str = constants.CONFIG_OPTION_API_URL) -> HcloudClient:
@@ -41,6 +42,7 @@ def make_client(token: str | None = None, url: str = constants.CONFIG_OPTION_API
     return HcloudClient(token=token, api_endpoint=url)
 
 
+@dataclass
 class HcloudReassignIni:
     """Hcloud Reassign INI file class."""
 
@@ -99,10 +101,11 @@ class HcloudReassignIni:
             self.client_section_dict[option] = self.config.get(constants.CONFIG_SECTION_CLIENT, option)
 
 
+@dataclass
 class HcloudClassBase:
     """This class provides all basics."""
 
-    def __init__(self, section: dict, client: dict, hclient: HcloudClient | None = None, **kwargs) -> None:
+    def __init__(self, section: dict, client: dict, hclient: HcloudClient | None = None) -> None:
         """Initialize HcloudClassBase.
 
         Parameters
