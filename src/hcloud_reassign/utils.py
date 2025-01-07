@@ -9,18 +9,25 @@ from configparser import ConfigParser
 # Import dataclass
 from dataclasses import dataclass
 
+# Import sleep
+from time import sleep
+
 # Import warnings
 import warnings
 
 # Provide hcloud Client object
 from hcloud import Client
+from hcloud.actions import Action, BoundAction, ResourceActionsClient
 
 # Import local constants
 from . import constants
 
-# Wrap hcloud.Client into our own type, so hcloud
-# does not need to get imported in every module
+# Wrap hcloud.Client and others into our own type,
+# though hcloud does not need to get imported in every module
 HcloudClient = Client
+HcloudAction = Action
+HcloudBoundAction = BoundAction
+HcloudResourceActions = ResourceActionsClient
 
 
 def make_client(token: str | None = None, url: str = constants.CONFIG_OPTION_API_URL) -> HcloudClient:
@@ -111,6 +118,11 @@ class HcloudClassBase:
     section_model: dict[str, type]
     section_type: str
 
+    # Error codes
+    status_success = constants.STATUS_SUCCESS
+    status_running = constants.STATUS_RUNNING
+    status_error = constants.STATUS_ERROR
+
     def __init__(self, section: dict, client: dict, hclient: HcloudClient | None = None) -> None:
         """Initialize HcloudClassBase.
 
@@ -170,3 +182,32 @@ class HcloudClassBase:
 
         if not (token in self.client.keys() and self.client[token]):
             raise ValueError(f"Option '{token}' is not defined or empty. You an access/api token for authentication!")
+
+    def __check_action_status__(self, response: HcloudBoundAction | HcloudAction, retries: int = 5) -> int:
+        """Check status of an action.
+
+        Parameters
+        ----------
+        response : HcloudBoundAction | HcloudAction
+                   Action response object.
+
+        Returns
+        -------
+        int:    Status, 0 on success, 1 on timeout, 2 on error.
+        """
+        retry_count = 0
+        r = response
+
+        while retry_count < retries and r.status != r.STATUS_SUCCESS:
+            r = HcloudResourceActions(client=self.hclient, resource=None).get_by_id(response.id)
+            retry_count += 1
+            # wait a bit, so we do not spam the HCloud API.
+            sleep(0.1)
+
+        if r.status == r.STATUS_RUNNING:
+            return self.status_running
+
+        if r.status == r.STATUS_ERROR:
+            return self.status_error
+
+        return self.status_success
