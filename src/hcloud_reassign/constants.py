@@ -31,3 +31,8 @@ CONFIG_DEFAULT_API_URL = "https://api.hetzner.cloud/v1"
 # Configuration options
 CONFIG_OPTION_API_URL = "api_url"
 CONFIG_OPTION_API_TKN = "api_token"
+
+# Create numeric status numbers
+STATUS_SUCCESS = 0
+STATUS_RUNNING = 1
+STATUS_ERROR = 2
