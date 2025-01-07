@@ -30,32 +30,64 @@ class HCloudFloatingIPSection(utils.HcloudClassBase):
         self.destination: str = section["destination"]
         self.metrics: bool = section["metrics"]
 
-    def __reassign(self, dest: str):
+    def reassign_server(self, dest: str) -> int:
         """Reassign floating IP section.
 
         Parameters
         ----------
         dest: str
-              Direction to reassign, either 'source' or 'destination'.
+              Name of the server object to get assigned.
+
+        Returns
+        -------
+        status: int
+                A status code word. Can be 'success' (0), 'running' (1) or 'error' (2).
+
         """
         dest_server = self.hclient.servers.get_by_name(name=dest)
+        if dest_server is None:
+            print(f"Server resource {dest_server} not found.")
+            return self.status_error
+
         flip = self.hclient.floating_ips.get_by_name(self.resource)
+        if flip is None:
+            print(f"Floating IP resource {self.resource} not found.")
+            return self.status_error
 
+        # Reassign floating ip to server
         response = self.hclient.floating_ips.assign(floating_ip=flip, server=dest_server)
+        # Check status of reassign action
+        status = self.__check_action_status__(response=response)
 
-        return response.status
+        return status
 
-    def assign_destination(self):
+    def __assign_destination(self) -> int:
         """Assign floating IP section to destination."""
-        return self.__reassign(dest=self.destination)
+        return self.reassign_server(dest=self.destination)
 
-    def assign_source(self):
+    def __assign_source(self) -> int:
         """Assign floating IP section to source."""
-        return self.__reassign(dest=self.source)
+        return self.reassign_server(dest=self.source)
 
-    def reassign(self, dest: str):
-        """Reassign floating IP section to destination."""
-        if dest == "src":
-            return self.assign_source()
-        if dest == "dest":
-            return self.assign_destination()
+    def reassign(self, direction: str) -> int:
+        """Reassign floating IP section by direction.
+
+        Parameters
+        ----------
+        direction: str
+                   Either 'src' or 'dest'.
+
+        Raises
+        ------
+        ValueError: If 'dest' is not 'src' or 'dest'.
+        """
+        if direction not in ["src", "dest"]:
+            raise ValueError(f"Invalid destination {direction}! Must be 'src' or 'dest'.")
+
+        status = 0
+        if direction == "src":
+            status = self.__assign_source()
+        if direction == "dest":
+            status = self.__assign_destination()
+
+        return status
