@@ -15,9 +15,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 
 try:
-    import hcloud_reassign.ip_floating as floating_ip
-    import hcloud_reassign.ip_public as public_ip
-    import hcloud_reassign.route as route
+    from hcloud_reassign.structures import hcloud_functions, status_message
     from hcloud_reassign.constants import EnvironmentalInfo
     from hcloud_reassign.utils import HcloudReassignIni
 except (ImportError, ModuleNotFoundError) as error:
@@ -89,13 +87,29 @@ def main():
     if cli_args.token:
         token = getpass(prompt="Password or Token: ")
 
+    status = 0
+
     if cli_args.config and not (cli_args.source or cli_args.destination):
         config = HcloudReassignIni(path=cli_args.config, api_token=token)
 
+        # Do all resources if --resource is not defined
+        # else do resources defined in --resource
+        if cli_args.resource:
+            resources = cli_args.resource
+        else:
+            resources = config.resource_sections
 
+        # Iterate through all the resources
+        for resource in resources:
+            reassignment_function = hcloud_functions[config.resource_section_dict[resource]['type']]
+            reassignment = reassignment_function(section=config.resource_section_dict[resource],
+                                                 client=config.client_section_dict)
+            status = reassignment.reassign(direction=cli_args.machine)
 
+            print(f"{resource}: {status_message[status]}")
 
-    return 0
+    return status
+
 
 if __name__ == "__main__":
     sys.exit(main())
