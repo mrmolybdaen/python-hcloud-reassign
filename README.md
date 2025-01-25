@@ -1,11 +1,11 @@
 # python-hetzner-reassign
 
 The Hetzner API currently does not provide fine-grained access controls for its API. You either have an access token
-which can only read information or have an access token which can write (including deletion) an entire project.
+which can only read information or have an access token which can write (including deletion of) an entire project.
 This situation makes it necessary that servers using things like `keepalived` for automatic fail-over do not know the API
 credentials.
 This project aims to provide:
-- Scrips for `keepalived` to start CI/CD pipelines
+- Scripts for `keepalived` to start CI/CD pipelines
 - A Python library and a script for resource reassignment
 - CI/CD templates for Gitlab CI/CD, Jenkins, Tekton and Github Workflows.
 
@@ -66,6 +66,7 @@ A `[client]` section is mandatory to configure the client.
 To configure resources you can add as many sections as you want. To specify the function used for reassignment, you need
 to define a type. The following types exist:
 - `ip_floating`
+With the following two being planned in the future.
 - `ip_public`
 - `routes`
 
@@ -89,27 +90,6 @@ resource=floating-test-01
 source=srv-test-01
 destination=srv-test-02
 metrics=true
-
-; For primary ip addresses as described by Hetzner
-; Warning: Reassigning primary IP addresses will result in reboots!
-; One cannot add more than one primary ip.
-; There is no such thing like secondary ip addresses in the Hetzner Cloud.
-[public.NAME]
-type=ip_public
-resource=public-test-01
-source=
-destination=
-metrics=true
-
-; For routes
-; Reassigning/changing routes means, changing the specified gateway.
-; This is mostly relevant for outbound traffic. Be aware that changing the standard gateway
-; means not to reassign the route, but deleting the old one and
-[route.NAME]
-type=route
-network=0.0.0.0/0
-source=10.0.0.1
-destination=10.0.0.2
 ```
 
 ## Constrains
