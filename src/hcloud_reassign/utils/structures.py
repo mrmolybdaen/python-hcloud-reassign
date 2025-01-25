@@ -4,17 +4,19 @@
 """This module provides structures and function aliases."""
 
 # Import utilities
-from . import ip_floating
-from . import ip_public
-from . import route
+from ..reassign import ip_floating
+from .constants import STATUS_SUCCESS, STATUS_ERROR, STATUS_RUNNING, STATUS_TIMEOUT
 
 # Enum of Classes to call, mapping to configuration
 # section types.
 hcloud_functions = {
     "ip_floating": ip_floating.HCloudFloatingIPSection,
-    "ip_public": ip_public.HCloudPrimaryIpSection,
-    "route": route.HCloudRouteSection,
 }
 
 # Enum for error messages.
-status_message = {0: "success", 1: "timeout", 2: "error"}
+status_message = {
+    STATUS_SUCCESS: "success",
+    STATUS_TIMEOUT: "timeout",
+    STATUS_ERROR: "error",
+    STATUS_RUNNING: "running",
+}

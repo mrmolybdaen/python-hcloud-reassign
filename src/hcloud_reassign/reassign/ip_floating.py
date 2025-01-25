@@ -1,27 +1,31 @@
-# Copyright: (c) 2024, Christian Siegel <molybdaen@mr42.org>
+# Copyright: (c) 2025, Christian Siegel <molybdaen@mr42.org>
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """This module provides a class and methods to reassign floating IP address objects."""
 
 # Import utilities
-from . import utils
+from ..core import base
+from ..utils.types import HcloudSectionFloatingIp_t
+
+# Model
+ip_floating_section_model = {"resource": str, "source": str, "destination": str, "metrics": bool}
 
 
-class HCloudFloatingIPSection(utils.HcloudClassBase):
-    """This class represents a Floating IP section."""
+class HCloudFloatingIPSection(base.HcloudClassBase):
+    """This class represents a Floating IP section and its actions."""
 
-    def __init__(self, section: dict[str, str, str, str, bool], client: dict):
+    def __init__(self, section: HcloudSectionFloatingIp_t, client: dict):
         """Initialize a Floating IP section object.
 
         Parameters
         ----------
-        section: dict[str, str, str, str, bool]
+        section: HcloudSectionFloatingIp_t
                  Dictionary with floating_ip section contents.
         client: dict
                 Dictionary of connection information such as API token and endpoint url.
         """
         self.section_type = "ip_floating"
-        self.section_model = {"resource": str, "source": str, "destination": str, "metrics": bool}
+        self.section_model = ip_floating_section_model
 
         super().__init__(section=section, client=client)
 

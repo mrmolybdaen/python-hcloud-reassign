@@ -1,9 +1,8 @@
-# Copyright: (c) 2024, Christian Siegel <molybdaen@mr42.org>
+# Copyright: (c) 2025, Christian Siegel <molybdaen@mr42.org>
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """This module contains constants used throughout hcloud_reassign."""
-import sys
-from sys import version, version_info, platform, prefix
+from sys import version, version_info, platform, prefix, executable
 from dataclasses import dataclass
 
 
@@ -14,7 +13,7 @@ class EnvironmentalInfo:
     # Note some system information
     PYTHON_INFO = version
     PYTHON_VERSION = version_info
-    PYTHON_EXECUTABLE = sys.executable
+    PYTHON_EXECUTABLE = executable
     PYTHON_PLATFORM = platform
 
     # Note some module information
@@ -36,3 +35,4 @@ CONFIG_OPTION_API_TKN = "api_token"
 STATUS_SUCCESS = 0
 STATUS_RUNNING = 1
 STATUS_ERROR = 2
+STATUS_TIMEOUT = 3
