@@ -1,12 +1,13 @@
 [build-system]
 requires = [
     "setuptools >= 75.1.0",
+    "setuptools-scm >= 8.1.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "hcloud_reassign"
-description = "A small project to reassign routes, primary and floating ip addresses in the Hetzner Cloud."
+description = "A small project to reassign floating ip addresses in the Hetzner Cloud."
 authors = [
     { name="Christian Siegel", email="molybdaen@mr42.org" },
 ]
@@ -17,7 +18,7 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
     "Natural Language :: English",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Topic :: System :: Cloud",
     "Topic :: System :: Systems Administration",
     "Topic :: Utilities",
@@ -27,3 +28,14 @@ requires-python = ">= 3.11"
 dependencies = [
     "hcloud>=2.3.0",
 ]
+
+[project.urls]
+"Homepage" = "https://gitlab.com/mrmolybdaen/python-hcloud-reassign"
+"Source Code" = "https://gitlab.com/mrmolybdaen/python-hcloud-reassign"
+"Bug Tracker" = "https://gitlab.com/mrmolybdaen/python-hcloud-reassign/-/issues"
+
+[project.scripts]
+hcloud-reassign = "hcloud_reassign.cli.main_cli:main"
+hcloud-metrics = "hcloud_reassign.clu.metrics_cli:main"
+
+[tool.setuptools_scm]
