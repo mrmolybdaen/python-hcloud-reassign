@@ -39,3 +39,25 @@ test:pylint:
     - pylint --version
     - pylint --rcfile tests/linters/.pylintrc src/ -f colorized
   cache: []
+
+# Run pytest on different Python Versions
+test:pytest:
+  stage: test
+  image: "python:$IMAGE_TAG"
+  parallel:
+    matrix:
+      IMAGE_TAG:
+        - "latest"
+        - "3.13"
+        - "3.12"
+        - "3.11"
+  coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  script:
+    # Install build and test dependencies
+    - python3 -m pip install -r requirements-build.txt
+    # Build a dev instance of the Python package
+    - python3 -m build
+    # Install the dev package into the current interpreter library
+    - python3 -m pip install dist/*.whl
+    # Run the tests
+    - python3 -m pytest --cov
