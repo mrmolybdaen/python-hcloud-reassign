@@ -8,3 +8,4 @@ flake8-bugbear
 flake8-docstrings
 pytest
 pytest-cov
+ruff
