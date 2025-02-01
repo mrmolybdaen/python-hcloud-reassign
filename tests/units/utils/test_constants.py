@@ -10,11 +10,13 @@ This module contains unit tests for hcloud_reassign.utils.constants
 
 from importlib.metadata import version
 import hcloud_reassign.utils.constants as constants
+import pytest
 
 
 class TestConstants:
     """Test group for hcloud_reassign.utils.constants."""
 
+    @pytest.mark.skipif("dev" in version("hcloud_reassign"), reason="Skip test in development")
     def test_script_version(self) -> None:
         """Check if SCRIPT_VERSION is the same as package version.
 
