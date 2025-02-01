@@ -24,7 +24,7 @@ class TestHCloudFloatingIPSection:
     }
 
     # Define a simple mock up client configuration
-    mock_client = {"token": "1", "url": "http://mock_server"}
+    mock_client = {"api_token": "1", "api_url": "http://mock_server"}
 
     # Initialize the mock floating ip
     MockFloatingIP = HCloudFloatingIPSection(mock_section, mock_client)
