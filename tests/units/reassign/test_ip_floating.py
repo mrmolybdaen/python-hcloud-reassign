@@ -17,7 +17,7 @@ class TestHCloudFloatingIPSection:
 
     # Define a simple mockup section
     mock_section = {
-        "type": "floating_ip",
+        "type": "ip_floating",
         "resource": "mock_floating_ip",
         "source": "mock_server_a",
         "destination": "mock_server_b",
