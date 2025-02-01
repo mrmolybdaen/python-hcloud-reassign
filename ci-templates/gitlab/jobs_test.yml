@@ -4,6 +4,16 @@
 # Linters and code style checker
 ##
 
+# Run ruff against code (This includes Linting for code style and syntax)
+test:ruff:
+  stage: linters
+  image: "pipelinecomponents/ruff:latest"
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "trigger"
+  script:
+    - pip install -r requirements.txt
+    - ruff check src/*
+
 # Codestyle with flake8 and the flake8-black plugin
 test:flake8:
   stage: linters

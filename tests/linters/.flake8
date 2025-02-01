@@ -5,3 +5,5 @@ extend-ignore = E203,E501,E701
 inline-quotes = "
 multiline-quotes = "
 docstring-quotes = """
+per-file-ignores =
+    tests/*.py: S101
