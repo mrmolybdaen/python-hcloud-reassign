@@ -181,7 +181,9 @@ class HcloudClassBase:
             self.client[url] = constants.CONFIG_DEFAULT_API_URL
 
         if not (token in self.client.keys() and self.client[token]):
-            raise ValueError(f"Option '{token}' is not defined or empty. You an access/api token for authentication!")
+            raise ValueError(
+                f"Option '{token}' is not defined or empty. You need an access/api token for authentication!"
+            )
 
     def __check_action_status__(self, response: HcloudBoundAction | HcloudAction, retries: int = 5) -> int:
         """Check status of an action.
