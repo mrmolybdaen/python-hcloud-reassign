@@ -56,11 +56,11 @@ test:pytest:
   image: "python:$IMAGE_TAG"
   parallel:
     matrix:
-      IMAGE_TAG:
-        - "latest"
-        - "3.13"
-        - "3.12"
-        - "3.11"
+      - IMAGE_TAG:
+          - "latest"
+          - "3.13"
+          - "3.12"
+          - "3.11"
   coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
     # Install build and test dependencies
