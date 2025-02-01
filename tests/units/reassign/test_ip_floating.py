@@ -15,6 +15,20 @@ from hcloud_reassign.reassign.ip_floating import HCloudFloatingIPSection
 class TestHCloudFloatingIPSection:
     """Test group for hcloud_reassign.reassign.ip_floating."""
 
+    # Define a simple mockup section
+    mock_section = {
+        "resource": "mock_floating_ip",
+        "source": "mock_server_a",
+        "destination": "mock_server_b",
+        "metrics": False,
+    }
+
+    # Define a simple mock up client configuration
+    mock_client = {"token": "1", "url": "http://mock_server"}
+
+    # Initialize the mock floating ip
+    MockFloatingIP = HCloudFloatingIPSection(mock_section, mock_client)
+
     def test_reassign_server(self) -> None:
         """Test the reassign server method."""
         print("test")
@@ -22,4 +36,5 @@ class TestHCloudFloatingIPSection:
     def test_reassign_raise(self) -> None:
         """Check that invalid inputs to description raise ValueError."""
         with pytest.raises(ValueError):
-            HCloudFloatingIPSection.reassign(direction="invalid")
+            # %TODO: We need a mockup configuration
+            self.MockFloatingIP.reassign(direction="invalid")
