@@ -7,33 +7,12 @@
 from datetime import datetime, timedelta
 
 # Import utilities
-from ..core import base
-from ..reassign.ip_floating import ip_floating_section_model
-from ..utils.types import TimeNow_t, HcloudSectionFloatingIp_t, HcloudMetric_t
+from ..reassign.ip_floating import HCloudFloatingIPSection
+from ..utils.types import TimeNow_t, HcloudMetric_t
 
 
-class HServerMetricsServer(base.HcloudClassBase):
+class HCloudMetricsServer(HCloudFloatingIPSection):
     """This class represents a metrics client to gather information about one or more cloud servers."""
-
-    def __init__(self, section: HcloudSectionFloatingIp_t, client: dict) -> None:
-        """Initialize the metrics object.
-
-        Parameters
-        ----------
-        section : HcloudSectionFloatingIp_t
-                  Dictionary with floating_ip section contents.
-        client : dict
-                 Dictionary of HCloud API client information.
-        """
-        self.section_type = "ip-floating"
-        self.section_model = ip_floating_section_model
-
-        super().__init__(section=section, client=client)
-
-        self.resource: str = section["resource"]
-        self.source: str = section["source"]
-        self.destination: str = section["destination"]
-        self.metrics: bool = section["metrics"]
 
     @staticmethod
     def __check_timedata(interval: tuple[str, str] | TimeNow_t, step: float = 1800) -> tuple[str, str]:
@@ -62,7 +41,6 @@ class HServerMetricsServer(base.HcloudClassBase):
             t1 = datetime.now()
             t0 = t1 - timedelta(seconds=1800)
             interval = (t0.isoformat(), t1.isoformat())
-            return interval
         else:
             try:
                 t0 = datetime.fromisoformat(interval[0])
@@ -73,7 +51,7 @@ class HServerMetricsServer(base.HcloudClassBase):
                     raise ValueError("Interval must be greater or equal to step size and bigger than 1800 seconds")
             except ValueError as err:
                 print(err)
-                raise ValueError("Interval limits must be ISO8601 formatted.")
+                raise ValueError("Interval limits must be ISO8601 formatted.") from err
 
             interval = (interval[0], interval[1])
 
